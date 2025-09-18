@@ -1,0 +1,134 @@
+CREATE TABLE `usermngr` (
+	`fUserName` VARCHAR(32) NOT NULL DEFAULT '0' COLLATE 'utf8mb4_general_ci',
+	`UserPassword` VARCHAR(64) NOT NULL DEFAULT '' COLLATE 'utf8mb4_general_ci',
+	`FullName` VARCHAR(50) NULL DEFAULT '0' COLLATE 'utf8mb4_general_ci',
+	`RoleRight` INT NOT NULL DEFAULT '0',
+	`EmailAddress` VARCHAR(128) NULL DEFAULT NULL COLLATE 'utf8mb4_general_ci',
+	`Online` TINYINT(1) NULL DEFAULT '1',
+	`Designation` VARCHAR(255) NULL DEFAULT '' COLLATE 'utf8mb4_general_ci',
+	`LastAccess` DATETIME NULL DEFAULT NULL,
+	`SecurityToken` CHAR(40) NOT NULL DEFAULT 'ACCESS-System' COLLATE 'utf8mb4_general_ci',
+	`Deleted` DATETIME NULL DEFAULT NULL,
+	`EnableExternalUse` INT UNSIGNED NOT NULL DEFAULT '0',
+	`Expired` INT UNSIGNED NOT NULL DEFAULT '0',
+	`Created` DATETIME NULL DEFAULT NULL,
+	`forLogout` INT UNSIGNED NULL DEFAULT '0',
+	PRIMARY KEY (`fUserName`) USING BTREE
+);
+
+
+CREATE TABLE `usermodule` (
+	`ID` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+	`ModuleID` INT UNSIGNED NOT NULL,
+	`fUserName` VARCHAR(32) NOT NULL DEFAULT '' COLLATE 'utf8mb4_general_ci',
+	`Admin` INT NULL DEFAULT '0',
+	`Enabled` INT NULL DEFAULT '1',
+	PRIMARY KEY (`ID`) USING BTREE,
+	UNIQUE INDEX `ModuleID` (`ModuleID`, `fUserName`) USING BTREE
+;
+
+
+CREATE TABLE `userdata` (
+	`UserName` VARCHAR(32) NOT NULL DEFAULT '' COLLATE 'utf8mb4_general_ci',
+	`DeptID` VARCHAR(5) NOT NULL DEFAULT '' COLLATE 'utf8mb4_general_ci',
+	`FirstName` VARCHAR(50) NOT NULL DEFAULT '' COLLATE 'utf8mb4_general_ci',
+	`LastName` VARCHAR(50) NOT NULL DEFAULT '' COLLATE 'utf8mb4_general_ci',
+	`MiddleName` VARCHAR(50) NOT NULL DEFAULT '' COLLATE 'utf8mb4_general_ci',
+	`Prefix` VARCHAR(30) NOT NULL DEFAULT '' COLLATE 'utf8mb4_general_ci',
+	`Suffix` VARCHAR(30) NULL DEFAULT '' COLLATE 'utf8mb4_general_ci',
+	`Gender` VARCHAR(1) NULL DEFAULT NULL COLLATE 'utf8mb4_general_ci',
+	`BirthDate` DATE NULL DEFAULT NULL,
+	`BirthPlace` VARCHAR(100) NULL DEFAULT NULL COLLATE 'utf8mb4_general_ci',
+	`PresentAdd` VARCHAR(100) NULL DEFAULT NULL COLLATE 'utf8mb4_general_ci',
+	`ContactNumber` VARCHAR(30) NULL DEFAULT NULL COLLATE 'utf8mb4_general_ci',
+	`HomeAdd` VARCHAR(100) NULL DEFAULT '' COLLATE 'utf8mb4_general_ci',
+	`Nationality` VARCHAR(20) NULL DEFAULT NULL COLLATE 'utf8mb4_general_ci',
+	`ReligionID` TINYINT NULL DEFAULT NULL,
+	`CivilStatus` VARCHAR(15) NULL DEFAULT NULL COLLATE 'utf8mb4_general_ci',
+	`SpouseLastName` VARCHAR(50) NULL DEFAULT NULL COLLATE 'utf8mb4_general_ci',
+	`SpouseFirstName` VARCHAR(50) NULL DEFAULT NULL COLLATE 'utf8mb4_general_ci',
+	`SpouseMiddleName` VARCHAR(50) NULL DEFAULT NULL COLLATE 'utf8mb4_general_ci',
+	`SpouseAddress` VARCHAR(100) NULL DEFAULT NULL COLLATE 'utf8mb4_general_ci',
+	`SpousePhone` VARCHAR(30) NULL DEFAULT NULL COLLATE 'utf8mb4_general_ci',
+	`LastJob` VARCHAR(100) NULL DEFAULT NULL COLLATE 'utf8mb4_general_ci',
+	`Company` VARCHAR(100) NULL DEFAULT NULL COLLATE 'utf8mb4_general_ci',
+	`CompanyAdd` VARCHAR(100) NULL DEFAULT NULL COLLATE 'utf8mb4_general_ci',
+	`HighestDegree` VARCHAR(50) NULL DEFAULT NULL COLLATE 'utf8mb4_general_ci',
+	`EmploymentStatus` VARCHAR(15) NULL DEFAULT NULL COLLATE 'utf8mb4_general_ci',
+	`RoleRight` INT NOT NULL,
+	`Online` TINYINT(1) NULL DEFAULT '1',
+	`Designation` VARCHAR(255) NULL DEFAULT NULL COLLATE 'utf8mb4_general_ci',
+	`UserPassword` VARCHAR(64) NOT NULL DEFAULT '' COLLATE 'utf8mb4_general_ci',
+	`PictureName` TEXT NULL DEFAULT NULL COLLATE 'utf8mb4_general_ci',
+	`EmployeeID` INT NULL DEFAULT '0',
+	`Supervisor` VARCHAR(20) NULL DEFAULT NULL COLLATE 'utf8mb4_general_ci',
+	`ID` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+	`Created` VARCHAR(128) NULL DEFAULT NULL COLLATE 'utf8mb4_general_ci',
+	PRIMARY KEY (`ID`) USING BTREE,
+	UNIQUE INDEX `UserName` (`UserName`) USING BTREE,
+	INDEX `EmployeeID` (`EmployeeID`) USING BTREE,
+	INDEX `ReligionID` (`ReligionID`) USING BTREE
+);
+
+
+CREATE TABLE `teacher` (
+	`TeacherID` VARCHAR(20) NOT NULL DEFAULT '' COLLATE 'utf8mb4_general_ci',
+	`DeptID` VARCHAR(5) NOT NULL DEFAULT '' COLLATE 'utf8mb4_general_ci',
+	`MiddleName` VARCHAR(50) NULL DEFAULT NULL COLLATE 'utf8mb4_general_ci',
+	`FirstName` VARCHAR(50) NULL DEFAULT NULL COLLATE 'utf8mb4_general_ci',
+	`LastName` VARCHAR(50) NULL DEFAULT NULL COLLATE 'utf8mb4_general_ci',
+	PRIMARY KEY (`TeacherID`) USING BTREE,
+	INDEX `DeptID` (`DeptID`) USING BTREE
+);
+
+CREATE TABLE `department` (
+	`DeptID` VARCHAR(5) NOT NULL DEFAULT '' COLLATE 'utf8mb4_general_ci',
+	`DeptName` VARCHAR(50) NOT NULL DEFAULT '' COLLATE 'utf8mb4_general_ci',
+	`DeptHead` VARCHAR(50) NULL DEFAULT NULL COLLATE 'utf8mb4_general_ci',
+	`DeptAdd` VARCHAR(120) NULL DEFAULT NULL COLLATE 'utf8mb4_general_ci',
+	`Acad` TINYINT UNSIGNED NOT NULL DEFAULT '1',
+	`EmailAddress` VARCHAR(128) NULL DEFAULT 'onlineregistration@lorma.edu' COLLATE 'utf8mb4_general_ci',
+	`Phone` VARCHAR(32) NULL DEFAULT NULL COLLATE 'utf8mb4_general_ci',
+	`DeptUser` VARCHAR(32) NULL DEFAULT NULL COLLATE 'utf8mb4_general_ci',
+	`GLCode` VARCHAR(20) NULL DEFAULT '' COLLATE 'utf8mb4_general_ci',
+	`GradingPeriod` VARCHAR(4) NULL DEFAULT 'PMF' COLLATE 'utf8mb4_general_ci',
+	`IDName` CHAR(1) NULL DEFAULT NULL COLLATE 'utf8mb4_general_ci',
+	PRIMARY KEY (`DeptID`) USING BTREE,
+	UNIQUE INDEX `DeptID` (`DeptID`) USING BTREE,
+	INDEX `DeptUser` (`DeptUser`) USING BTREE
+);
+
+
+
+
+-- GRADES
+CREATE TABLE `termgrades` (
+	`ID` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+	`StudID` CHAR(7) NOT NULL DEFAULT '' COLLATE 'utf8mb4_general_ci',
+	`CodeNumber` VARCHAR(12) NOT NULL DEFAULT '' COLLATE 'utf8mb4_general_ci',
+	`Term` VARCHAR(6) NOT NULL DEFAULT '' COLLATE 'utf8mb4_general_ci',
+	`SchoolYear` CHAR(9) NOT NULL DEFAULT '' COLLATE 'utf8mb4_general_ci',
+	`PrelimGrade` VARCHAR(20) NULL DEFAULT NULL COLLATE 'utf8mb4_general_ci',
+	`MidtermGrade` VARCHAR(20) NULL DEFAULT NULL COLLATE 'utf8mb4_general_ci',
+	`FinalsGrade` VARCHAR(20) NULL DEFAULT NULL COLLATE 'utf8mb4_general_ci',
+	`FirstGrading` VARCHAR(20) NULL DEFAULT NULL COLLATE 'utf8mb4_general_ci',
+	`SecondGrading` VARCHAR(20) NULL DEFAULT NULL COLLATE 'utf8mb4_general_ci',
+	`ThirdGrading` VARCHAR(20) NULL DEFAULT NULL COLLATE 'utf8mb4_general_ci',
+	`FourthGrading` VARCHAR(20) NULL DEFAULT NULL COLLATE 'utf8mb4_general_ci',
+	`PreFinalsGrade` VARCHAR(20) NULL DEFAULT NULL COLLATE 'utf8mb4_general_ci',
+	`isRemedial` INT UNSIGNED NULL DEFAULT '0',
+	`null` VARCHAR(20) NULL DEFAULT NULL COLLATE 'utf8mb4_general_ci',
+	`LastUpdate` DATETIME NULL DEFAULT NULL,
+	`PrelimDate` DATETIME NULL DEFAULT NULL,
+	`MidtermDate` DATETIME NULL DEFAULT NULL,
+	`FinalsDate` DATETIME NULL DEFAULT NULL,
+	`FirstDate` DATETIME NULL DEFAULT NULL,
+	`SecondDate` DATETIME NULL DEFAULT NULL,
+	`ThirdDate` DATETIME NULL DEFAULT NULL,
+	`FourthDate` DATETIME NULL DEFAULT NULL,
+	`PreFinalsDate` DATETIME NULL DEFAULT NULL,
+	PRIMARY KEY (`ID`) USING BTREE,
+	UNIQUE INDEX `StudCodeTermSY` (`StudID`, `CodeNumber`, `Term`, `SchoolYear`) USING BTREE,
+	INDEX `CodeNumberTermSY` (`CodeNumber`, `Term`, `SchoolYear`) USING BTREE,
+	INDEX `StudIDX` (`StudID`) USING BTREE
+);
