@@ -1,61 +1,219 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Access DB Database Structure Analysis
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+## Overview
+The `access_db` database is a comprehensive academic management system that tracks students, teachers, subjects, grades, and various administrative activities. Below is a detailed analysis of the database structure and relationships.
 
-## About Laravel
+## 1. Core Entity Tables
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+### Students
+**Primary Table: `studentdata`**
+- **Primary Key**: `StudID` (char(7))
+- **Key Fields**: 
+  - Personal info: FirstName, MiddleName, LastName, Email
+  - Academic: CourseID, YearLevel, CurriculumID
+  - Status: isActive, isGraduate, Archived
+  - Enrollment: RegDate, ModifiedDate, ModifiedBy
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+### Teachers
+**Primary Table: `teacher`**
+- **Primary Key**: `TeacherID` (varchar(20))
+- **Key Fields**: 
+  - Personal: FirstName, MiddleName, LastName
+  - Department: DeptID
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+### Subjects
+**Primary Table: `subject`**
+- **Primary Key**: `SubjectID` (varchar(12))
+- **Key Fields**: 
+  - Description, Units, LabUnits
+  - SubjectType, DeptID, CategoryID
+  - Status: Enabled
 
-## Learning Laravel
+### Schedules/Classes
+**Primary Table: `schedule`**
+- **Primary Key**: `SchedID` (bigint unsigned)
+- **Key Fields**: 
+  - `CodeNumber` (varchar(12)) - Unique class identifier
+  - `SubjectID`, `TeacherID`
+  - Time/Location: StartTime, EndTime, Room, Day
+  - Academic Period: Sem, SchoolYear
+  - Course/Department: CourseID, DeptID
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+## 2. Grade Storage System
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+### Primary Grades Table: `termgrades`
+**Structure**:
+- **Primary Key**: `ID` (bigint unsigned, auto_increment)
+- **Student Link**: `StudID` (char(7))
+- **Class Link**: `CodeNumber` (varchar(12))
+- **Academic Period**: `Term` (varchar(6)), `SchoolYear` (char(9))
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+**Grade Fields**:
+- `PrelimGrade` (varchar(20))
+- `MidtermGrade` (varchar(20))
+- `FinalsGrade` (varchar(20))
+- `PreFinalsGrade` (varchar(20))
+- Alternative grading periods:
+  - `FirstGrading`, `SecondGrading`, `ThirdGrading`, `FourthGrading`
 
-## Laravel Sponsors
+**Timestamps**:
+- `PrelimDate`, `MidtermDate`, `FinalsDate`, `PreFinalsDate`
+- `FirstDate`, `SecondDate`, `ThirdDate`, `FourthDate`
+- `LastUpdate`
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+**Additional Fields**:
+- `isRemedial` (int unsigned) - Indicates remedial status
 
-### Premium Partners
+## 3. Entity Relationships
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+### Student ↔ Grades
+```
+studentdata.StudID → termgrades.StudID
+```
 
-## Contributing
+### Grades ↔ Subject ↔ Teacher
+```
+termgrades.CodeNumber → schedule.CodeNumber
+schedule.SubjectID → subject.SubjectID
+schedule.TeacherID → teacher.TeacherID
+```
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+### Student ↔ Enrollment
+```
+studentdata.StudID → enrollment.StudID
+enrollment: StudID + CourseID + YearLevel + Term + SchoolYear
+```
 
-## Code of Conduct
+### Student ↔ Section
+```
+studentdata.StudID → studentsection.StudID
+studentsection.SectionID → section.ID
+section.Adviser → teacher.TeacherID
+```
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+### Teacher ↔ Subject Expertise
+```
+teacher.TeacherID → teachersubject.TeacherID
+teachersubject.SubjectID → subject.SubjectID
+```
 
-## Security Vulnerabilities
+## 4. Audit and Logging Tables
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+### Grade Change Tracking: `gradechange`
+**Purpose**: Tracks all grade modification requests and approvals
+**Key Fields**:
+- `TeacherID`, `StudID`, `SchedID`
+- Grade fields: `PrelimGrade`, `MidtermGrade`, `FinalsGrade`, etc.
+- `Period` (varchar(10)) - Which grading period was changed
+- `Grade` (varchar(20)) - New grade value
+- `RequestType` (char(1)) - Type of change request
+- `Requested` (datetime) - When change was requested
+- `Approved` (datetime) - When change was approved
 
-## License
+### General Data Changes: `datachange`
+**Purpose**: Tracks general data modification requests
+**Key Fields**:
+- `Requestor` (varchar(32)) - Who requested the change
+- `RequestDate` (datetime)
+- `Data` (text) - Details of the change
+- `ApprovedDate`, `ApprovedBy`, `DeniedBy`, `DeniedDate`
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+### User Activity: `onlineuser`
+**Purpose**: Tracks active user sessions
+**Key Fields**:
+- `sessid` (char(40)) - Session ID
+- `user` (varchar(32)) - Username
+- `time` (int) - Timestamp
+- `location`, `page`, `host` - Activity details
+
+### Login/Logout Tracking: `lorclog`
+**Purpose**: Tracks user login/logout activities
+**Key Fields**:
+- `fUserName` (varchar(32)) - Username
+- `TimeIn`, `TimeOut` (datetime)
+- `StudID` (varchar(7)) - If student login
+
+### Additional Logging Tables
+- `emaillog` - Email activity tracking
+- `studenrollmentlog` - Student enrollment changes
+- `studledgerhistory` - Financial transaction history
+- `unenrollhistory` - Unenrollment tracking
+- `studentnotices` - Student notifications/notices
+
+## 5. Key Relationships Summary
+
+### ERD-Style Relationships
+
+```
+STUDENT (studentdata)
+├── StudID (PK)
+├── CourseID, YearLevel
+└── Personal/Contact Info
+
+TEACHER (teacher)
+├── TeacherID (PK)
+├── DeptID
+└── Name Info
+
+SUBJECT (subject)
+├── SubjectID (PK)
+├── DeptID
+└── Course Details
+
+SCHEDULE (schedule)
+├── SchedID (PK)
+├── CodeNumber (Unique Class ID)
+├── SubjectID (FK → subject)
+├── TeacherID (FK → teacher)
+└── Time/Location Info
+
+TERMGRADES (termgrades)
+├── ID (PK)
+├── StudID (FK → studentdata)
+├── CodeNumber (FK → schedule)
+├── Term, SchoolYear
+└── Grade Fields (Prelim, Midterm, Finals, etc.)
+
+ENROLLMENT (enrollment)
+├── StudID (FK → studentdata)
+├── CourseID, YearLevel
+└── Term, SchoolYear
+```
+
+### Relationship Flow
+1. **Student Enrollment**: `studentdata` → `enrollment` → `studentsection`
+2. **Class Assignment**: `schedule` links `subject` + `teacher` + time/location
+3. **Grade Recording**: `termgrades` links `student` + `class` (via CodeNumber)
+4. **Audit Trail**: All changes tracked in `gradechange`, `datachange`, etc.
+
+## 6. System Activity Tracking
+
+The system comprehensively tracks:
+
+### Academic Activities
+- **Grade Changes**: Complete audit trail with approval workflow
+- **Enrollment Changes**: Student enrollment/unenrollment history
+- **Schedule Changes**: Class schedule modifications
+
+### User Activities
+- **Login/Logout**: Session tracking with timestamps
+- **Data Modifications**: General data change requests and approvals
+- **Email Communications**: Email activity logging
+
+### Financial Activities
+- **Student Ledger**: Financial transaction history
+- **Payment Tracking**: Payment records and modifications
+
+### Administrative Activities
+- **Student Notices**: Communication tracking
+- **Document Management**: File uploads and references
+- **System Access**: User session and page access tracking
+
+## 7. Grade Calculation Notes
+
+The system supports multiple grading periods:
+- **College/University**: Prelim, Midterm, Finals, PreFinals
+- **K-12**: First, Second, Third, Fourth Grading
+- **Remedial**: Special flag for remedial classes
+
+Each grade entry includes both the grade value and timestamp, enabling complete grade history tracking.
